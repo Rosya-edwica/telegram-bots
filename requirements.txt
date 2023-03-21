@@ -2,3 +2,4 @@ aiogram
 asyncio
 pymysql
 loguru
+python-dotenv
