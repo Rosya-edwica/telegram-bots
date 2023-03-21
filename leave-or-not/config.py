@@ -4,6 +4,9 @@ import os
 from typing import NamedTuple
 from enum import Enum
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 TOKEN = os.getenv("TOKEN_LEAVE_OR_NOT")
 HOST = os.getenv("EDWICA_DB_HOST")
