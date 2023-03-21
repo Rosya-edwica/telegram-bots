@@ -2,6 +2,8 @@
 
 ## Необходимые переменные окружения
 
+Внутри директории каждого бота требуется создать .env файл и записать  туда необходимые токены
+
 - `TOKEN_LEAVE_OR_NOT` — токен от бота leave or not
 - `TOKEN_GRAMMAR_CHECK` — токен от бота grammar check
 - `TOKEN_HUMANIST_OR_TECHIE` — токен от бота humanist or techie
