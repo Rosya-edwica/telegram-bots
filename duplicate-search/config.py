@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from enum import Enum
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
+from dotenv import load_dotenv
+load_dotenv()
 
 WELCOME_TEXT = """Вам будет представлен список пар навыков, схожих по некоторому принципу. Вам нужно подвердить/опровергнуть сходство навыков.
         Какие навыки ЯВЛЯЮТСЯ дубликатами?
