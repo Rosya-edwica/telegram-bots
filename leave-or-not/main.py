@@ -9,7 +9,7 @@ import os
 from contextlib import suppress
 
 import database
-from config import States, TOKEN, add_user_action, create_notify
+from config import States, TOKEN, add_user_action, create_notify, get_my_statistics
 
 
 CURRENT_SKILL_ID = None
@@ -35,7 +35,15 @@ async def run_bot(message: types.Message):
     logger.info(f"{message.from_user.username, message.from_user.full_name, message.from_user.id} Начал работу с ботом", )
 
 
-
+@dp.message_handler(commands="statistics")
+async def show_statistics(message: types.Message):
+    statistics = get_my_statistics(message.from_user.id)
+    await States.question.set()
+    if not statistics:
+        await message.answer("Нет иформации по вашей статистике ответов", reply_markup=types.ReplyKeyboardRemove())
+    else:
+        await message.answer(statistics, reply_markup=types.ReplyKeyboardRemove())
+    
 
 @dp.message_handler(state=States.start_question)
 async def start(message: types.Message):
@@ -124,6 +132,10 @@ async def input_invalid(message: types.Message):
     if message.text == "/start":
         await run_bot(message)
         return
+    elif message.text == "/statistics":
+        await show_statistics(message)
+        return
+
     await States.question.set()
     return await message.reply("Неправильный ответ. Используйте клавиатуру или введите ответ самостоятельно")
 

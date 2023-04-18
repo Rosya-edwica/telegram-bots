@@ -83,3 +83,13 @@ def get_user_ids_for_notification() -> list[int]:
     for file in os.listdir("logs/actions"):
         ids.append(int(file.replace(".json", "")))
     return ids
+
+def get_my_statistics(userId: int) -> str:
+    for file in os.listdir("logs/actions"):
+        if str(userId) != file.replace(".json", ""): continue
+        data = json.load(open(f"logs/actions/{file}", "r"))
+        text = "\n".join(("Статистика ответов:", 
+                          f"Ответили 'Да' {data['yes']} раз/раза", 
+                          f"Ответили 'Нет' {data['no']} раз/раза", 
+                          f"Ответили 'Назад' {data['cancel']} раз/раза"))
+        return text
