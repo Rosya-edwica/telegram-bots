@@ -35,6 +35,8 @@ async def run_bot(message: types.Message):
     logger.info(f"{message.from_user.username, message.from_user.full_name, message.from_user.id} Начал работу с ботом", )
 
 
+
+
 @dp.message_handler(state=States.start_question)
 async def start(message: types.Message):
     """Вспомогательный метод для запуска первого вопроса. Без этого метода, дублируются первые два вопросы и сбивается весь порядок ответов
@@ -119,6 +121,9 @@ async def delete_message(message: types.Message, sleep_time: int = 0):
 # Обработка исключений
 @dp.message_handler(state=States.question)
 async def input_invalid(message: types.Message):
+    if message.text == "/start":
+        await run_bot(message)
+        return
     await States.question.set()
     return await message.reply("Неправильный ответ. Используйте клавиатуру или введите ответ самостоятельно")
 
