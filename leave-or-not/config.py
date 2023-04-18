@@ -1,6 +1,8 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import Message
 
 import os
+import requests
 import json
 from datetime import datetime
 from typing import NamedTuple,Literal
@@ -34,17 +36,19 @@ class States(StatesGroup):
     question = State()
 
 
-def add_user_action(actionName: Literal["yes", "no", "cancel"], userId: int, userName: str):
-    filename = f"logs/actions/{userId}.json"
+def add_user_action(actionName: Literal["yes", "no", "cancel"], message: Message):
+    filename = f"logs/actions/{message.from_user.id}.json"
     
     if os.path.exists(filename):
         data = json.load(open(filename, "r"))
         data[actionName] += 1
         data["last_updated"] = str(datetime.now())
+        data["fullname"] = message.from_user.full_name
     else:
         os.makedirs("logs/actions", exist_ok=True)
         data = {
-            "name": userName,
+            "name": message.from_user.username,
+            "fullname": message.from_user.full_name,
             "yes": 0,
             "no": 0,
             "cancel": 0,
@@ -54,3 +58,28 @@ def add_user_action(actionName: Literal["yes", "no", "cancel"], userId: int, use
     
     with open(filename, "w") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
+    
+
+
+def create_notify():
+    answer = input("Отправить уведомление об обновлении всем пользователям? [Отправить/Нет]\n>>> ")
+    if answer != "Отправить": return
+    
+    users = get_user_ids_for_notification()
+    for user in users:
+        send_notify(user)
+
+def send_notify(userId: int):
+    message = "Бот обновился и готов к работе! Для начала можешь отправить мне /start"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    params = {
+        "chat_id": userId,
+        "text": message
+    }
+    response = requests.post(url, params=params, headers={"Content-Type": "application/json"})
+
+def get_user_ids_for_notification() -> list[int]:
+    ids = []
+    for file in os.listdir("logs/actions"):
+        ids.append(int(file.replace(".json", "")))
+    return ids

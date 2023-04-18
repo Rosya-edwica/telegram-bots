@@ -9,7 +9,7 @@ import os
 from contextlib import suppress
 
 import database
-from config import States, TOKEN, add_user_action
+from config import States, TOKEN, add_user_action, create_notify
 
 
 CURRENT_SKILL_ID = None
@@ -22,6 +22,8 @@ os.makedirs("logs/", exist_ok=True)
 logger.remove()
 logger.add("logs/info.log", format="{time} {level} {message}", level="INFO", rotation="10 MB", compression="zip", mode="w")
 
+
+
 @dp.message_handler(commands='start')
 async def run_bot(message: types.Message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
@@ -30,7 +32,7 @@ async def run_bot(message: types.Message):
     # Запускаем вспомогательный метод, с которого всё начнется 
     await States.start_question.set()  # Показываем следующий вопрос
     await message.answer('Для начала напишите мне - готов', reply_markup=markup)
-    logger.info(f"{message.from_user.username} Начал работу с ботом", )
+    logger.info(f"{message.from_user.username, message.from_user.full_name, message.from_user.id} Начал работу с ботом", )
 
 
 @dp.message_handler(state=States.start_question)
@@ -70,7 +72,7 @@ async def show_question(message: types.Message, state: FSMContext):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add('Нет', 'Назад', 'Да')
     if message.text.lower().strip() == 'назад':
-        add_user_action(actionName="cancel", userId=message.from_user.id, userName=message.from_user.username)
+        add_user_action(actionName="cancel", message=message)
         previos_skill = await database.get_previos_skill(CURRENT_SKILL_ID)
         if previos_skill:
             await States.question.set()
@@ -83,12 +85,12 @@ async def show_question(message: types.Message, state: FSMContext):
     else:
         # Меняем значения в БД
         if message.text.lower().strip() == 'да':
-            add_user_action(actionName="yes", userId=message.from_user.id, userName=message.from_user.username)
+            add_user_action(actionName="yes", message=message)
             await database.confirm_skill(id=CURRENT_SKILL_ID)
             logger.info("Прошел проверку навык с id: %d", CURRENT_SKILL_ID)
             # logger.warning("Id: %d - Accept", CURRENT_QUESTION_ID)
         elif message.text.lower().strip() == 'нет':
-            add_user_action(actionName="no", userId=message.from_user.id, userName=message.from_user.username)
+            add_user_action(actionName="no", message=message)
             logger.info("Забраковали навык с id: %d", CURRENT_SKILL_ID)
             await database.confirm_skill(id=CURRENT_SKILL_ID, confirm=False)
 
@@ -121,5 +123,8 @@ async def input_invalid(message: types.Message):
     return await message.reply("Неправильный ответ. Используйте клавиатуру или введите ответ самостоятельно")
 
 
+
+
 if __name__ == "__main__":
+    create_notify()
     executor.start_polling(dp, skip_updates=True)

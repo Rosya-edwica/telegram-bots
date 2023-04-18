@@ -86,3 +86,5 @@ async def show_the_rest() -> tuple[int, int]:
         exit(err)
     finally:
         connection.close()
+
+
