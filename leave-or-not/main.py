@@ -56,7 +56,7 @@ async def start(message: types.Message):
         logger.info("Неправильный ответ на вопрос '%s'", message.text)
         return
 
-    skill = await database.get_skill_from_database()
+    skill = database.get_skill_from_database()
     if not skill:
         logger.warning("Закончились вопросы")
         await message.answer("Все вопросы закончились! Спасибо", reply_markup=types.ReplyKeyboardRemove())
@@ -64,7 +64,7 @@ async def start(message: types.Message):
     CURRENT_SKILL_ID = skill.iD # Меняем значение нашей переменной, тем самым указывая корректный айди вопроса, который нужно обработать
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add('Нет', 'Да')
-    _, remains = await database.show_the_rest()
+    _, remains = database.show_the_rest()
     await message.answer(f"Оставить навык?\n- {skill.title}\nОсталось:{remains}", reply_markup=markup)
     await States.question.set()
 
@@ -83,10 +83,10 @@ async def show_question(message: types.Message, state: FSMContext):
     markup.add('Нет', 'Назад', 'Да')
     if message.text.lower().strip() == 'назад':
         add_user_action(actionName="cancel", message=message)
-        previos_skill = await database.get_previos_skill(CURRENT_SKILL_ID)
+        previos_skill = database.get_previos_skill(CURRENT_SKILL_ID)
         if previos_skill:
             await States.question.set()
-            _, remains = await database.show_the_rest()
+            _, remains = database.show_the_rest()
             await message.answer(f"Оставить навык?\n- {previos_skill.title}\nОсталось:{remains}", reply_markup=markup)
             CURRENT_SKILL_ID = previos_skill.iD
 
@@ -96,16 +96,16 @@ async def show_question(message: types.Message, state: FSMContext):
         # Меняем значения в БД
         if message.text.lower().strip() == 'да':
             add_user_action(actionName="yes", message=message)
-            await database.confirm_skill(id=CURRENT_SKILL_ID)
+            database.confirm_skill(id=CURRENT_SKILL_ID)
             logger.info("Прошел проверку навык с id: %d", CURRENT_SKILL_ID)
             # logger.warning("Id: %d - Accept", CURRENT_QUESTION_ID)
         elif message.text.lower().strip() == 'нет':
             add_user_action(actionName="no", message=message)
             logger.info("Забраковали навык с id: %d", CURRENT_SKILL_ID)
-            await database.confirm_skill(id=CURRENT_SKILL_ID, confirm=False)
+            database.confirm_skill(id=CURRENT_SKILL_ID, confirm=False)
 
         # Получаем новый вопрос
-        skill = await database.get_skill_from_database()
+        skill = database.get_skill_from_database()
         if not skill:
             logger.warning("Закончились вопросы")
             await message.answer("Все вопросы закончились! Спасибо", reply_markup=types.ReplyKeyboardRemove())
@@ -115,7 +115,7 @@ async def show_question(message: types.Message, state: FSMContext):
 
         # Показываем вопрос пользователю
         await States.question.set() # Показываем следующий вопрос
-        _, remains = await database.show_the_rest()
+        _, remains = database.show_the_rest()
         await message.answer(f"Оставить навык?\n- {skill.title}\nОсталось:{remains}", reply_markup=markup)
 
 
