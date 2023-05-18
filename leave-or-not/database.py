@@ -23,7 +23,7 @@ def connect_to_db() -> Connection:
 def get_skill_from_database(db: Connection) -> Skill:
     """Возвращает самую первую пару навыков, у которой значение is_duplicate является None. 
     Таким образом, мы понимаем, что с этой парой еще не работали"""
-    
+    db.ping()
     with db.cursor() as cursor:
         query_get_null_couple = f"SELECT id, name, is_displayed FROM {MYSQL.TABLE.value}  WHERE is_displayed IS NULL LIMIT 1"
 
@@ -33,6 +33,7 @@ def get_skill_from_database(db: Connection) -> Skill:
         else:return
 
 def confirm_skill(db: Connection, id: int, confirm: bool = True) -> None:
+    db.ping()
     with db.cursor() as cursor:
         if confirm:
             cursor.execute(f"UPDATE {MYSQL.TABLE.value} SET is_displayed=1 WHERE id={id}")
@@ -43,6 +44,7 @@ def confirm_skill(db: Connection, id: int, confirm: bool = True) -> None:
 
 
 def refute_skill(db: Connection, id: int) -> None: # Опровергнуть сходство
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(f"UPDATE {MYSQL.TABLE.value} SET is_displayed=null WHERE id={id}")
         db.commit()
@@ -50,6 +52,7 @@ def refute_skill(db: Connection, id: int) -> None: # Опровергнуть с
 
 
 def get_previos_skill(db: Connection, current_id: int) -> Skill | None:
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(f"""SELECT id, name, is_displayed FROM {MYSQL.TABLE.value} WHERE id = {current_id-1}""")
         skill = cursor.fetchone()
@@ -62,6 +65,7 @@ def get_previos_skill(db: Connection, current_id: int) -> Skill | None:
         return res
 
 def show_the_rest(db: Connection) -> tuple[int, int]:
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(f"SELECT COUNT(*) FROM {MYSQL.TABLE.value}")
         count_all_values = cursor.fetchone()
