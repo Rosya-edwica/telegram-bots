@@ -19,7 +19,6 @@ def main():
         check_skills(TABLENAME_UNCORRECT_SKILLS)
         
         logging.info("Все множества redis обработаны\nЗасыпаем на 60 сек...")
-        logging.info("")
         time.sleep(1)
 
 
