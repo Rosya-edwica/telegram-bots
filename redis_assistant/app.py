@@ -29,7 +29,7 @@ def check_skills(type_skills: Literal["minus_skill", "correct_skill"]):
     for skill in skills:
         duplicates = find_duplicates(skill)
         if duplicates:
-            db.save_all_skills_to_postgres(duplicates, type_skills)
+            db.save_all_skills_to_postgres(duplicates + [skill, ], type_skills)
             db.delete_duplicates_skills_in_mysql(duplicates)
         red.srem(type_skills, skill)
         logging.info(f"Drop skill {skill} from {type_skills}")
