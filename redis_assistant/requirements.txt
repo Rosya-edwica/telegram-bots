@@ -1,0 +1,5 @@
+redis
+pymysql
+psycopg2-binary
+python-dotenv
+fuzzywuzzy
