@@ -9,10 +9,10 @@ def delete_duplicates_skills_in_mysql(duplicates: list[str]):
         query = f"""DELETE FROM demand WHERE name in ({','.join(("'"+skill+"'" for skill in duplicates))})"""
         cursor.execute(query)
     except BaseException as err:
-        logging.fatal(f"Произошла ошибка при удалении: {err}")
+        logging.fatal(f"Error during deletion: {err}")
     else:
         connection.commit()
-        logging.info(f"Успешно освободили таблицу mysql.demand от {len(duplicates)} повторений")
+        logging.info(f"Successufull cleaning mysql.demand from {len(duplicates)} duplicates")
     finally:
         connection.close()
 
@@ -24,11 +24,11 @@ def save_all_skills_to_postgres(wordList: list[str], tableName: str) -> bool:
             query = f"INSERT INTO {tableName}(name) VALUES {create_insert_query(wordList[index:index+1000])} ON CONFLICT (name) DO NOTHING;"
             cursor.execute(query)
     except BaseException as err:
-        logging.fatal(f"Произошла ошибка при сохранении стоп-слов: {err}")
+        logging.fatal(f"Error during saving skills: {err}")
         connection.close()
     else:
         connection.commit()
-        logging.info(f"Успешно сохранили в таблицу postgres.{tableName} {len(wordList)} навыков")
+        logging.info(f"Successufull saving in table postgres.{tableName} {len(wordList)} skills")
     finally:
         connection.close()
 

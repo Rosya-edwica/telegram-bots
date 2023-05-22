@@ -9,7 +9,7 @@ def get_none_checked_skills() -> list[str]:
         cursor.execute(f"SELECT name FROM demand WHERE is_displayed is NULL")
         skills = [skill[0] for skill in cursor.fetchall()]
     except BaseException as err:
-        logging.fatal(f"Ошибка при получении навыков: {err}")
+        logging.fatal(f"Error during getting skills from demand table: {err}")
     finally:
         connection.close()
         return skills

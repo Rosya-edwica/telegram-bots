@@ -6,7 +6,7 @@ import dotenv
 
 loaded_env = dotenv.load_dotenv(".env")
 if not loaded_env:
-    exit("Создайте файл .env!")
+    exit("Create enviroment file .env!")
 
 def connect_to_postgres():
 	db = psycopg2.connect(
