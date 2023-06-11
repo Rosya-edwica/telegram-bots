@@ -30,7 +30,7 @@ def check_skills(type_skills: Literal["minus_skill", "correct_skill"]):
         duplicates = find_duplicates(skill)
         if duplicates:
             db.save_all_skills_to_postgres(duplicates + [skill, ], type_skills)
-            db.delete_duplicates_skills_in_mysql(duplicates)
+            db.delete_duplicates_skills_in_mysql(parent_skill=skill, duplicates=duplicates)
         red.srem(type_skills, skill)
         logging.info(f"Drop skill {skill} from {type_skills}")
 
@@ -48,4 +48,5 @@ def find_duplicates(skill: str) -> list[str]:
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    db.s()
