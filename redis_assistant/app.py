@@ -48,5 +48,4 @@ def find_duplicates(skill: str) -> list[str]:
 
 
 if __name__ == "__main__":
-    # main()
-    db.s()
+    main()

@@ -18,15 +18,6 @@ def delete_duplicates_skills_in_mysql(parent_skill: str, duplicates: list[str]):
     finally:
         connection.close()
 
-def s():
-    connection = db.connect_to_mysql()
-    cursor = connection.cursor()
-    query_parent_id = f"SELECT id FROM demand WHERE name ='Гра' LIMIT 1;"
-    cursor.execute(query_parent_id)
-    parent_id = cursor.fetchone()[0]
-    print(parent_id)
-    connection.close()
-
 def save_all_skills_to_postgres(wordList: list[str], tableName: str) -> bool:
     connection = db.connect_to_postgres()
     cursor = connection.cursor()
