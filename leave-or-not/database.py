@@ -54,7 +54,7 @@ def refute_skill(db: Connection, id: int) -> None: # Опровергнуть с
 def get_previos_skill(db: Connection, current_id: int) -> Skill | None:
     db.ping()
     with db.cursor() as cursor:
-        cursor.execute(f"""SELECT id, name, is_displayed FROM {MYSQL.TABLE.value} WHERE id = {current_id-1}""")
+        cursor.execute(f"""SELECT id, name, is_displayed FROM {MYSQL.TABLE.value} WHERE id = {current_id}""")
         skill = cursor.fetchone()
 
         try:res = Skill(*skill)
